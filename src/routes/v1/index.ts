@@ -1,13 +1,10 @@
 import { Router } from "express";
-import exampleRoutes from "./example.routes.js";
+import filtersRoutes from "./filters.routes.js";
+import kpisRoutes from "./kpis.route.js";
 
 const router = Router();
 
-// Mount route modules
-router.use("/examples", exampleRoutes);
-
-// Add more routes here as you create them
-// router.use("/users", userRoutes);
-// router.use("/products", productRoutes);
+router.use("/filters", filtersRoutes);
+router.use("/kpis", kpisRoutes);
 
 export default router;

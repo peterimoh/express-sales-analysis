@@ -1,8 +1,10 @@
-/**
- * Central export point for all models
- * Import models from here: import { exampleModel } from "#models/index.js"
- */
+// Filters model
+export { FiltersModel, filtersModel } from "./filters.model.js";
+export type { Filter } from "./filters.model.js";
 
-export { ExampleModel, exampleModel } from "./example.model.js";
-export type { Example } from "./example.model.js";
+// KPIs model
+export { KPIsModel, kpisModel } from "./kpis.model.js";
+export type { KPIs, KPIsParams } from "./kpis.model.js";
+
+// Base model
 export { BaseModel } from "./base.model.js";

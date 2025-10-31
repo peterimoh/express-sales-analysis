@@ -2,6 +2,16 @@ import type { NextFunction, Request, Response } from "express";
 import type { ParamsDictionary, Query } from "express-serve-static-core";
 import type { ZodError, ZodType } from "zod";
 
+// Extend Express Request type to include validated properties
+declare global {
+  namespace Express {
+    interface Request {
+      validatedQuery?: Record<string, unknown>;
+      validatedParams?: ParamsDictionary;
+    }
+  }
+}
+
 export const validate =
   (schema: ZodType) => (req: Request, _res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body);
@@ -53,7 +63,8 @@ export const validateRequest =
         if (!queryResult.success) {
           return next(new ValidationError(queryResult.error));
         }
-        req.query = queryResult.data as Query;
+        // Store validated query in a custom property since req.query is read-only
+        req.validatedQuery = queryResult.data as Record<string, unknown>;
       }
 
       if (schemas.params) {
@@ -61,7 +72,8 @@ export const validateRequest =
         if (!paramsResult.success) {
           return next(new ValidationError(paramsResult.error));
         }
-        req.params = paramsResult.data as ParamsDictionary;
+        // Store validated params in a custom property
+        req.validatedParams = paramsResult.data as ParamsDictionary;
       }
 
       next();
