@@ -1,8 +1,5 @@
 import { BaseModel } from "./base.model.js";
-
-export interface TableMetadata {
-  lastUpdated: Date | null;
-}
+import type { TableMetadata } from "#types/index.js";
 
 export class MetadataModel extends BaseModel<TableMetadata> {
   protected tableName = "sales";

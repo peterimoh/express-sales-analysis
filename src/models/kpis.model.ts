@@ -1,31 +1,10 @@
+import { GlobalFiltersParams, KPIs } from "#types/index.js";
 import { BaseModel } from "./base.model.js";
-
-export interface KPIs {
-  revenue_current: number;
-  profit_current: number;
-  orders_current: number;
-  aov_current: number;
-  profit_margin_current: number;
-  revenue_delta_pct: number;
-  profit_delta_pct: number;
-  orders_delta_pct: number;
-  nps_pct_current: number | null;
-  nps_avg_score_current: number | null;
-}
-
-export interface KPIsParams {
-  startDate: string;
-  endDate: string;
-  country?: string;
-  productCategory?: string;
-  marketingChannel?: string;
-  customerSegment?: string;
-}
 
 export class KPIsModel extends BaseModel<KPIs> {
   protected tableName = "sales";
 
-  async getKPIs(params: KPIsParams): Promise<KPIs | null> {
+  async getKPIs(params: GlobalFiltersParams): Promise<KPIs | null> {
     const {
       startDate,
       endDate,

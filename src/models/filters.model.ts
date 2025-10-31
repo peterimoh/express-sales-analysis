@@ -1,11 +1,5 @@
 import { BaseModel } from "./base.model.js";
-
-export interface Filter {
-  countries?: string[];
-  categories?: string[];
-  channels?: string[];
-  segments?: string[];
-}
+import type { Filter } from "#types/index.js";
 
 interface QueryResult {
   facets: Filter;

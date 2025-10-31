@@ -1,16 +1,14 @@
 import type { Request, Response, NextFunction } from "express";
-import { kpisModel } from "#models/index.js";
+import { channelModel } from "#models/index.js";
 import { AppError } from "#common/errors.js";
 import RedisClient from "#config/redis.js";
-import { CacheKeys } from "#config/cache-keys.js";
 import { validateGlobalFilters } from "#common/validation/schemas.js";
 
-export const kpisController = {
-  getKPIs: [
+export const channelController = {
+  getChannelMix: [
     validateGlobalFilters,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        // Use validated query data if available, otherwise fall back to req.query
         const query = req.validatedQuery || req.query;
         const {
           startDate,
@@ -35,25 +33,21 @@ export const kpisController = {
         };
 
         // Generate cache key with all parameters
-        const cacheKey = `${CacheKeys.KPIS_V1}:${JSON.stringify(params)}`;
-        const cachedKPIs = await RedisClient.get(cacheKey);
+        const cacheKey = `channel:mix:${JSON.stringify(params)}`;
+        const cachedMix = await RedisClient.get(cacheKey);
 
-        if (cachedKPIs) {
-          res.json({ data: JSON.parse(cachedKPIs) });
+        if (cachedMix) {
+          res.json({ data: JSON.parse(cachedMix) });
           return;
         }
 
-        const kpis = await kpisModel.getKPIs(params);
+        const channelMix = await channelModel.getChannelMix(params);
 
-        if (!kpis) {
-          throw new AppError("No KPIs found for the given parameters", 404);
-        }
-
-        await RedisClient.set(cacheKey, JSON.stringify(kpis));
-        res.json({ data: kpis });
+        await RedisClient.set(cacheKey, JSON.stringify(channelMix));
+        res.json({ data: channelMix });
       } catch (error) {
         const message =
-          error instanceof Error ? error.message : "Failed to get KPIs";
+          error instanceof Error ? error.message : "Failed to get channel mix";
         next(new AppError(message, 500));
       }
     },
