@@ -53,7 +53,12 @@ export class RedisClient {
     }
 
     try {
-      return await redisClient.get(key);
+      const result = await redisClient.get(key);
+      // Explicitly handle the return type
+      if (typeof result === "string") {
+        return result;
+      }
+      return null;
     } catch (error) {
       console.error("Redis get error:", error);
       return null;
