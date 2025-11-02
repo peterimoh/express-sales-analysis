@@ -64,6 +64,21 @@ export interface CustomerRevenue {
   clv: number;
 }
 
+export interface RegionRevenue {
+  location: string;
+  revenue: number;
+  orders: number;
+  profit: number;
+}
+
+export interface CountryRevenue {
+  country: string;
+  revenue: number;
+  orders: number;
+  profit: number;
+  revenueShare: string; // Percentage of total revenue
+}
+
 export interface CLVDistribution {
   range: string;
   count: number;
@@ -76,4 +91,59 @@ export interface ChannelMix {
   profit: number;
   abandonment: number;
   abandonmentRate: string;
+}
+
+export interface ChannelPerformance {
+  channel: string;
+  orders: number;
+  revenue: number;
+  profit: number;
+  aov: number;
+  profitMargin: string;
+  revenueShare: string; // Percentage of total revenue
+  abandonment: number;
+  abandonmentRate: string;
+}
+
+export interface MarketingPerformance {
+  location: string;
+  revenue: number;
+  orders: number;
+}
+
+export interface GeographicPerformance {
+  country: string;
+  region: string;
+  orders: number; // Changed from string to number
+  revenue: number; // Changed from string to number
+  profit: number; // Changed from string to number
+  margin: string; // Percentage margin (string with 2 decimals)
+  customersCount: number; // Changed from string to number
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface Satisfaction {
+  category: string;
+  avgNPS: string; // Average NPS score (0-10) as string with 1 decimal
+  avgCSAT: string; // Average CSAT score (0-10) as string with 1 decimal
+  revenue: number;
+}
+
+export interface NPSDistribution {
+  range: string;
+  count: number;
+}
+
+export interface CSATDistribution {
+  range: string;
+  count: number;
 }

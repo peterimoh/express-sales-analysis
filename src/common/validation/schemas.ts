@@ -13,3 +13,18 @@ export const globalFiltersSchema = z.object({
 export const validateGlobalFilters = validateRequest({
   query: globalFiltersSchema,
 });
+
+export const paginatedGlobalFiltersSchema = globalFiltersSchema.extend({
+  page: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : 1)),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : 20)),
+});
+
+export const validatePaginatedGlobalFilters = validateRequest({
+  query: paginatedGlobalFiltersSchema,
+});

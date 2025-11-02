@@ -1,4 +1,3 @@
-// Re-export types from types/index.ts for convenience
 export type {
   Filter,
   KPIs,
@@ -6,8 +5,17 @@ export type {
   Revenue,
   CategoryRevenue,
   CustomerRevenue,
+  RegionRevenue,
+  CountryRevenue,
   CLVDistribution,
   ChannelMix,
+  ChannelPerformance,
+  MarketingPerformance,
+  GeographicPerformance,
+  Satisfaction,
+  NPSDistribution,
+  CSATDistribution,
+  PaginatedResponse,
   GlobalFiltersParams,
   OptionalGlobalFilters,
 } from "#types/index.js";
@@ -29,6 +37,15 @@ export { CustomerModel, customerModel } from "./customer.model.js";
 
 // Channel model
 export { ChannelModel, channelModel } from "./channel.model.js";
+
+// Marketing model
+export { MarketingModel, marketingModel } from "./marketing.model.js";
+
+// Geographic model
+export { GeographicModel, geographicModel } from "./geographic.models.js";
+
+// Satisfaction model
+export { SatisfactionModel, satisfactionModel } from "./satisfaction.model.js";
 
 // Base model
 export { BaseModel } from "./base.model.js";

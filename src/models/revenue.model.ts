@@ -3,6 +3,8 @@ import {
   Revenue,
   CategoryRevenue,
   CustomerRevenue,
+  RegionRevenue,
+  CountryRevenue,
 } from "#types/index.js";
 import { BaseModel } from "./base.model.js";
 
@@ -206,6 +208,149 @@ export class RevenueModel extends BaseModel<Revenue> {
     const queryParams = [startDate, endDate, ...filterConditions];
     const result = await this.query<CustomerRevenue>(query, queryParams);
     return result.rows;
+  }
+
+  async getTopRegionsByRevenue(
+    params: GlobalFiltersParams
+  ): Promise<RegionRevenue[]> {
+    const {
+      startDate,
+      endDate,
+      country,
+      productCategory,
+      marketingChannel,
+      customerSegment,
+    } = params;
+
+    // Build optional WHERE conditions (exclude country since we're grouping by it)
+    const filters: string[] = [];
+    const filterConditions: string[] = [];
+
+    if (productCategory) {
+      filters.push(`product_category = $${filterConditions.length + 3}`);
+      filterConditions.push(productCategory);
+    }
+    if (marketingChannel) {
+      filters.push(`marketing_channel = $${filterConditions.length + 3}`);
+      filterConditions.push(marketingChannel);
+    }
+    if (customerSegment) {
+      filters.push(`customer_segment = $${filterConditions.length + 3}`);
+      filterConditions.push(customerSegment);
+    }
+
+    const whereClause =
+      filters.length > 0 ? `AND ${filters.join(" AND ")}` : "";
+
+    const query = `
+      SELECT
+        CONCAT(country, ' - ', COALESCE(region, 'Unknown')) AS location,
+        SUM(total_amount)::numeric AS revenue,
+        COUNT(*)::numeric AS orders,
+        SUM(total_profit)::numeric AS profit
+      FROM ${this.tableName}
+      WHERE transaction_date >= $1::DATE
+        AND transaction_date < $2::DATE
+        AND country IS NOT NULL
+        ${whereClause}
+      GROUP BY country, region
+      ORDER BY revenue DESC
+      LIMIT 10
+    `;
+
+    const queryParams = [startDate, endDate, ...filterConditions];
+    const result = await this.query<RegionRevenue>(query, queryParams);
+    return result.rows;
+  }
+
+  async getRevenueByCountry(
+    params: GlobalFiltersParams
+  ): Promise<CountryRevenue[]> {
+    const {
+      startDate,
+      endDate,
+      country,
+      productCategory,
+      marketingChannel,
+      customerSegment,
+    } = params;
+
+    // Build optional WHERE conditions (exclude country since we're grouping by it)
+    const filters: string[] = [];
+    const filterConditions: string[] = [];
+
+    if (productCategory) {
+      filters.push(`product_category = $${filterConditions.length + 3}`);
+      filterConditions.push(productCategory);
+    }
+    if (marketingChannel) {
+      filters.push(`marketing_channel = $${filterConditions.length + 3}`);
+      filterConditions.push(marketingChannel);
+    }
+    if (customerSegment) {
+      filters.push(`customer_segment = $${filterConditions.length + 3}`);
+      filterConditions.push(customerSegment);
+    }
+
+    const whereClause =
+      filters.length > 0 ? `AND ${filters.join(" AND ")}` : "";
+
+    const query = `
+      WITH country_stats AS (
+        SELECT
+          country,
+          SUM(total_amount)::numeric AS revenue,
+          COUNT(*)::numeric AS orders,
+          SUM(total_profit)::numeric AS profit
+        FROM ${this.tableName}
+        WHERE transaction_date >= $1::DATE
+          AND transaction_date < $2::DATE
+          AND country IS NOT NULL
+          ${whereClause}
+        GROUP BY country
+      ),
+      total_revenue AS (
+        SELECT SUM(revenue) AS total FROM country_stats
+      )
+      SELECT
+        cs.country,
+        cs.revenue,
+        cs.orders,
+        cs.profit,
+        CASE
+          WHEN tr.total > 0 THEN ROUND((cs.revenue / tr.total) * 100, 2)
+          ELSE 0
+        END AS revenue_share
+      FROM country_stats cs, total_revenue tr
+      ORDER BY cs.revenue DESC
+    `;
+
+    interface QueryResult {
+      country: string;
+      revenue: number;
+      orders: number;
+      profit: number;
+      revenue_share: number;
+    }
+
+    const queryParams = [startDate, endDate, ...filterConditions];
+    const result = await this.query<QueryResult>(query, queryParams);
+
+    return result.rows.map((row) => {
+      // Ensure revenue_share is a number before converting to string
+      const revenueShareValue =
+        typeof row.revenue_share === "number"
+          ? row.revenue_share
+          : parseFloat(String(row.revenue_share)) || 0;
+
+      return {
+        country: row.country,
+        revenue: row.revenue,
+        orders: row.orders,
+        profit: row.profit,
+        revenueShare: revenueShareValue.toFixed(2),
+      };
+    });
   }
 }
 

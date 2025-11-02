@@ -52,4 +52,53 @@ export const channelController = {
       }
     },
   ],
+  getPerformance: [
+    validateGlobalFilters,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const query = req.validatedQuery || req.query;
+        const {
+          startDate,
+          endDate,
+          country,
+          productCategory,
+          marketingChannel,
+          customerSegment,
+        } = query;
+
+        if (!startDate || !endDate) {
+          throw new AppError("startDate and endDate are required", 400);
+        }
+
+        const params = {
+          startDate: startDate as string,
+          endDate: endDate as string,
+          country: country as string | undefined,
+          productCategory: productCategory as string | undefined,
+          marketingChannel: marketingChannel as string | undefined,
+          customerSegment: customerSegment as string | undefined,
+        };
+
+        // Generate cache key with all parameters
+        const cacheKey = `channel:performance:${JSON.stringify(params)}`;
+        const cachedPerformance = await RedisClient.get(cacheKey);
+
+        if (cachedPerformance) {
+          res.json({ data: JSON.parse(cachedPerformance) });
+          return;
+        }
+
+        const performance = await channelModel.getChannelPerformance(params);
+
+        await RedisClient.set(cacheKey, JSON.stringify(performance));
+        res.json({ data: performance });
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Failed to get channel performance";
+        next(new AppError(message, 500));
+      }
+    },
+  ],
 };
