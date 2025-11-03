@@ -6,13 +6,11 @@ dotenv.config();
 const swaggerDefinition: SwaggerDefinition = {
   openapi: "3.0.0",
   info: {
-    title: "Sales HQ API",
+    title: "Data Analytics API",
     version: "1.0.0",
-    description:
-      "Comprehensive API documentation for Sales HQ analytics and management platform.",
+    description: "Comprehensive API documentation for Data Analytics platform.",
     contact: {
       name: "API Support",
-      email: "support@saleshq.com",
     },
     license: {
       name: "Proprietary",
