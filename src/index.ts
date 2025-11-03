@@ -52,7 +52,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Swagger API Documentation
 const swaggerUiOptions = {
-  customSiteTitle: "Sales HQ API Documentation",
+  customCss: ".swagger-ui .topbar { display: none; }",
+  customSiteTitle: "HQ Sales Analytics API Documentation",
   customfavIcon: "/favicon.ico",
   customCssUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css",
@@ -66,6 +67,16 @@ const swaggerUiOptions = {
     filter: true,
     showExtensions: true,
     showCommonExtensions: true,
+    docExpansion: "none",
+    operationsSorter: "alpha",
+    tagsSorter: "alpha",
+    tryItOutEnabled: true,
+    requestSnippetsEnabled: true,
+    responseSnippetsEnabled: true,
+    showRequestHeaders: true,
+    showRequestHeadersContentType: true,
+    showRequestHeadersAccept: true,
+    showRequestHeadersAcceptLanguage: true,
     // Explicitly set the URL to load the spec from
     url: "/docs.json",
   },
