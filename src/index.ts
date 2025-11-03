@@ -54,7 +54,6 @@ app.use(express.urlencoded({ extended: true }));
 const swaggerUiOptions = {
   customSiteTitle: "Sales HQ API Documentation",
   customfavIcon: "/favicon.ico",
-  // Use CDN for Swagger UI assets (works in all environments including Vercel)
   customCssUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css",
   customJs: [
