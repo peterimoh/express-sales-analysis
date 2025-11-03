@@ -22,8 +22,8 @@
       "dest": "src/config/swagger.ts"
     },
     {
-      "src": "/(.*)",
-      "dest": "src/index.ts"
+      "src": "/(*)",
+      "dest": "src/routes/index.ts"
     }
   ]
 }
