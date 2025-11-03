@@ -51,22 +51,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Swagger API Documentation
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customCss: ".swagger-ui .topbar { display: none }",
-    customSiteTitle: "Sales HQ API Documentation",
-    customfavIcon: "/favicon.ico",
-    swaggerOptions: {
-      persistAuthorization: true,
-      displayRequestDuration: true,
-      filter: true,
-      showExtensions: true,
-      showCommonExtensions: true,
-    },
-  })
-);
+const swaggerUiOptions = {
+  customCss: ".swagger-ui .topbar { display: none }",
+  customSiteTitle: "Sales HQ API Documentation",
+  customfavIcon: "/favicon.ico",
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    filter: true,
+    showExtensions: true,
+    showCommonExtensions: true,
+  },
+};
+
+// Swagger UI setup - use serveFiles array pattern for proper static asset handling
+app.use("/api-docs", swaggerUi.serveFiles(swaggerSpec, swaggerUiOptions));
+app.get("/api-docs", swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 // Health check endpoint (not documented in Swagger)
 app.get("/health", (_req, res) => {
