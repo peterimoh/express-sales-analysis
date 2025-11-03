@@ -51,31 +51,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Swagger API Documentation
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customCss: ".swagger-ui .topbar { display: none }",
-    customSiteTitle: "Sales HQ API Documentation",
-    customfavIcon: "/favicon.ico",
-    isExplorer: true,
-    swaggerOptions: {
-      persistAuthorization: true,
-      displayRequestDuration: true,
-      filter: true,
-      showExtensions: true,
-      showCommonExtensions: true,
-      url:
-        `${process.env.API_URL}/docs.json` ||
-        `http://localhost:${process.env.PORT}/docs.json`,
-    },
-  })
-);
+const swaggerUiOptions = {
+  customCss: ".swagger-ui .topbar { display: none }",
+  customSiteTitle: "Sales HQ API Documentation",
+  customfavIcon: "/favicon.ico",
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    filter: true,
+    showExtensions: true,
+    showCommonExtensions: true,
+  },
+};
 
-app.get("/docs.json", (req, res) => {
+// Serve Swagger UI static files
+app.use("/api-docs", swaggerUi.serveFiles(swaggerSpec, swaggerUiOptions));
+// Setup Swagger UI HTML page
+app.get("/api-docs", swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+
+// Swagger JSON endpoint
+app.get("/docs.json", (_req, res) => {
   res.setHeader("Content-Type", "application/json");
-  res.setHeader("Authorization", "Bearer");
-
   res.send(swaggerSpec);
 });
 
