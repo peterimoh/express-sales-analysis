@@ -704,6 +704,14 @@ const options = {
     "./src/controllers/**/*.ts",
     "./dist/src/routes/**/*.js",
     "./dist/src/controllers/**/*.js",
+    "../routes/**/*.ts",
+    "../controllers/**/*.ts",
+    "../../dist/src/routes/**/*.js",
+    "../../dist/src/controllers/**/*.js",
+    "../../../routes/**/*.ts",
+    "../../../controllers/**/*.ts",
+    "../../../../dist/src/routes/**/*.js",
+    "../../../../dist/src/controllers/**/*.js",
   ],
 };
 
