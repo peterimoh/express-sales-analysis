@@ -52,9 +52,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Swagger API Documentation
 const swaggerUiOptions = {
-  customCss: ".swagger-ui .topbar { display: none }",
   customSiteTitle: "Sales HQ API Documentation",
   customfavIcon: "/favicon.ico",
+  // Use CDN for Swagger UI assets (works in all environments including Vercel)
+  customCssUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css",
+  customJs: [
+    "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js",
+  ],
   swaggerOptions: {
     persistAuthorization: true,
     displayRequestDuration: true,
