@@ -1,16 +1,16 @@
 {
   "version": 2,
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "name": "bloggerPlatform",
+  "name": "sales HQ",
   "buildCommand": "npm run build",
   "builds": [
     {
       "src": "src/index.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["./node_modules/", "src//.yml"]
+        "includeFiles": ["./node_modules/", "src/config/swagger.ts"]
       }
     }
   ],
-  "routes": [{ "src": "/(.)", "dest": "src/index.ts" }]
+  "routes": [{ "src": "/api", "dest": "src/index.ts" }]
 }
