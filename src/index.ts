@@ -2,12 +2,18 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 import routes from "#routes/index.js";
 import { swaggerSpec } from "#config/swagger.js";
 import { notFound } from "#common/middleware/not-found.js";
 import { handleValidationError } from "#common/middleware/validate.js";
 import { errorHandler } from "#common/middleware/error-handler.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 const app = express();
@@ -50,7 +56,22 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Swagger API Documentation
+// Swagger JSON endpoint - load from docs/swagger.json if available, otherwise use generated spec
+app.get("/docs.json", (_req, res) => {
+  res.setHeader("Content-Type", "application/json");
+
+  // Try to load from docs/swagger.json first (pre-generated)
+  const swaggerJsonPath = join(__dirname, "docs", "swagger.json");
+  try {
+    const swaggerJson = JSON.parse(readFileSync(swaggerJsonPath, "utf-8"));
+    res.send(swaggerJson);
+  } catch (error) {
+    // Fallback to generated spec
+    res.send(swaggerSpec);
+  }
+});
+
+// Swagger UI options
 const swaggerUiOptions = {
   customCss: ".swagger-ui .topbar { display: none; }",
   customSiteTitle: "HQ Sales Analytics API Documentation",
@@ -77,16 +98,13 @@ const swaggerUiOptions = {
     showRequestHeadersContentType: true,
     showRequestHeadersAccept: true,
     showRequestHeadersAcceptLanguage: true,
-    // Explicitly set the URL to load the spec from
     url: "/docs.json",
   },
 };
 
-// Swagger JSON endpoint
-app.get("/docs.json", (_req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.send(swaggerSpec);
-});
+// Serve Swagger UI
+app.use("/api-docs", swaggerUi.serve);
+app.get("/api-docs", swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 // Health check endpoint (not documented in Swagger)
 app.get("/health", (_req, res) => {
@@ -94,9 +112,6 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api", routes);
-
-app.use("/api-docs", swaggerUi.serve);
-app.get("/api-docs", swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 app.use(handleValidationError);
 app.use(errorHandler);

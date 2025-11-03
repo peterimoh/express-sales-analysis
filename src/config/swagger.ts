@@ -91,7 +91,7 @@ const swaggerDefinition: SwaggerDefinition = {
           newPassword: {
             type: "string",
             minLength: 8,
-            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)",
+            pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)",
             example: "NewSecurePass123",
             description:
               "Must contain at least one uppercase, one lowercase, and one number",
