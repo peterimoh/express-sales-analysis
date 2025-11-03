@@ -201,4 +201,30 @@ export const authController = {
       );
     }
   },
+
+  getAllAdmins: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const admins = await userModel.getAllAdmins();
+
+      res.json({
+        data: admins.map((admin) => ({
+          id: admin.id,
+          email: admin.email,
+          fullName: admin.full_name,
+          role: admin.role,
+          is_password_reset_required: admin.is_password_reset_required,
+          is_active: admin.is_active,
+          last_login: admin.last_login,
+          created_at: admin.created_at,
+          updated_at: admin.updated_at,
+        })),
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to get admins";
+      next(
+        new AppError(message, error instanceof AppError ? error.status : 500)
+      );
+    }
+  },
 };

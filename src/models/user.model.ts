@@ -71,6 +71,22 @@ export class UserModel extends BaseModel<User> {
     const saltRounds = 10;
     return bcrypt.hash(password, saltRounds);
   }
+
+  async getAllAdmins(): Promise<
+    (Omit<User, "password_hash"> & { full_name: string })[]
+  > {
+    const query = `
+      SELECT id, email, full_name, role, is_password_reset_required, is_active, last_login, created_at, updated_at
+      FROM ${this.tableName}
+      WHERE role = 'admin' AND is_active = true
+      ORDER BY created_at DESC
+    `;
+
+    const result = await this.query<
+      Omit<User, "password_hash"> & { full_name: string }
+    >(query);
+    return result.rows;
+  }
 }
 
 export const userModel = new UserModel();
