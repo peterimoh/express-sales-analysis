@@ -77,8 +77,8 @@ app.get("/health", (_req, res) => {
 
 app.use("/api", routes);
 
-routes.use("/api-docs", swaggerUi.serve);
-routes.get("/api-docs", swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+app.use("/api-docs", swaggerUi.serve);
+app.get("/api-docs", swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 app.use(handleValidationError);
 app.use(errorHandler);
