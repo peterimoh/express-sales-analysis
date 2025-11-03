@@ -20,7 +20,9 @@ const swaggerDefinition: SwaggerDefinition = {
   },
   servers: [
     {
-      url: process.env.API_URL || `http://localhost:${process.env.PORT}/api`,
+      url:
+        process.env.API_URL + "/api" ||
+        `http://localhost:${process.env.PORT}/api`,
       description:
         process.env.NODE_ENV === "production"
           ? "Production server"
