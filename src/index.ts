@@ -64,11 +64,6 @@ const swaggerUiOptions = {
   },
 };
 
-// Serve Swagger UI static files
-app.use("/api-docs", swaggerUi.serveFiles(swaggerSpec, swaggerUiOptions));
-// Setup Swagger UI HTML page
-app.get("/api-docs", swaggerUi.setup(swaggerSpec, swaggerUiOptions));
-
 // Swagger JSON endpoint
 app.get("/docs.json", (_req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -81,6 +76,9 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/api", routes);
+
+app.use("/api-docs", swaggerUi.serve);
+app.get("/api-docs", swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 app.use(handleValidationError);
 app.use(errorHandler);
