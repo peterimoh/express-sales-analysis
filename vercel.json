@@ -24,6 +24,34 @@
     {
       "src": "/(*)",
       "dest": "src/routes/index.ts"
+    },
+    {
+      "src": "/(*)",
+      "dest": "src/controllers/index.ts"
+    },
+    {
+      "src": "/(*)",
+      "dest": "src/models/index.ts"
+    },
+    {
+      "src": "/(*)",
+      "dest": "src/services/index.ts"
+    },
+    {
+      "src": "/(*)",
+      "dest": "src/utils/index.ts"
+    },
+    {
+      "src": "/(*)",
+      "dest": "src/config/index.ts"
+    },
+    {
+      "src": "/(*)",
+      "dest": "src/common/index.ts"
+    },
+    {
+      "src": "/(*)",
+      "dest": "src/middlewares/index.ts"
     }
   ]
 }
