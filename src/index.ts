@@ -61,6 +61,8 @@ const swaggerUiOptions = {
     filter: true,
     showExtensions: true,
     showCommonExtensions: true,
+    // Explicitly set the URL to load the spec from
+    url: "/docs.json",
   },
 };
 

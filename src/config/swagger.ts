@@ -1,6 +1,9 @@
 import swaggerJsdoc from "swagger-jsdoc";
 import type { SwaggerDefinition } from "swagger-jsdoc";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
 dotenv.config();
 
 const swaggerDefinition: SwaggerDefinition = {
@@ -698,9 +701,42 @@ const swaggerDefinition: SwaggerDefinition = {
   ],
 };
 
+// Determine file paths based on environment and working directory
+// In Vercel, source files are typically still available alongside compiled files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Try different path combinations to find the route files
+// swagger-jsdoc will ignore files that don't exist
+const possiblePaths = [
+  // Standard development paths (relative to project root)
+  "./src/routes/**/*.ts",
+  "./src/controllers/**/*.ts",
+  // Production paths (compiled JS)
+  "./dist/src/routes/**/*.js",
+  "./dist/src/controllers/**/*.js",
+  // Absolute paths from this file's location
+  join(__dirname, "../routes/**/*.ts"),
+  join(__dirname, "../controllers/**/*.ts"),
+  join(__dirname, "../../dist/src/routes/**/*.js"),
+  join(__dirname, "../../dist/src/controllers/**/*.js"),
+];
+
 const options = {
   definition: swaggerDefinition,
-  apis: ["./src/routes/**/*.ts", "./src/controllers/**/*.ts"],
+  apis: possiblePaths,
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
+
+// Debug logging in production
+if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
+  const spec = swaggerSpec as { paths?: Record<string, unknown> };
+  const pathCount = Object.keys(spec.paths || {}).length;
+  console.log(`[Swagger] Spec generated with ${pathCount} path(s)`);
+  if (pathCount === 0) {
+    console.warn(
+      "[Swagger] No paths found! Check that route files exist and contain @swagger comments."
+    );
+  }
+}
