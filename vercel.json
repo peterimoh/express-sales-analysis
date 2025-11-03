@@ -12,18 +12,6 @@
     {
       "src": "/api-docs/swagger-ui-standalone-preset.js",
       "dest": "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js"
-    },
-    {
-      "src": "/api-docs/swagger-ui-init.js",
-      "dest": "app.js"
-    },
-    {
-      "src": "/api-docs.json",
-      "dest": "app.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "app.js"
     }
   ]
 }
