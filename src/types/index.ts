@@ -1,3 +1,44 @@
+// Auth Types
+export type UserRole = "super_admin" | "admin";
+
+export interface User {
+  id: number;
+  email: string;
+  password_hash: string;
+  role: UserRole;
+  is_password_reset_required: boolean;
+  is_active: boolean;
+  last_login: Date | null;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface CreateAdminInput {
+  email: string;
+  password: string; // Default password from super admin
+  fullName: string;
+}
+
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+export interface ResetPasswordInput {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: {
+    id: number;
+    email: string;
+    role: UserRole;
+    is_password_reset_required: boolean;
+  };
+}
+
 // Global Filter Types
 export interface OptionalGlobalFilters {
   country?: string;
@@ -146,4 +187,76 @@ export interface NPSDistribution {
 export interface CSATDistribution {
   range: string;
   count: number;
+}
+
+export interface PaymentMethod {
+  method: string;
+  orders: number;
+  revenue: number;
+  avgTransactionValue: string; // Formatted as string with 2 decimals
+  successRate: string; // Percentage as string (e.g., "99.5%")
+}
+
+export interface AgeRangeRevenue {
+  ageRange: string;
+  orders: number;
+  revenue: number;
+  profit: number;
+  avgSatisfaction: string; // Average CSAT score (0-10) as string with 2 decimals
+  margin: string; // Percentage margin as string with 2 decimals
+}
+
+export interface GenderRevenue {
+  gender: string;
+  orders: number;
+  revenue: number;
+  profit: number;
+  avgSatisfaction: string; // Average CSAT score (0-10) as string with 2 decimals
+  margin: string; // Percentage margin as string with 2 decimals
+}
+
+export interface SegmentPerformance {
+  segment: string; // Customer segment name
+  customersCount: number;
+  orders: number;
+  revenue: number;
+  avgCLV: string; // Average Customer Lifetime Value as string with 2 decimals
+  margin: string; // Percentage margin as string with 2 decimals
+}
+
+export interface SKURevenue {
+  sku: string; // Product SKU identifier
+  orders: number;
+  revenue: number;
+  profit: number;
+  units: number;
+  avgPrice: number;
+  margin: string; // Percentage margin as string with 2 decimals
+}
+
+export interface CohortRetention {
+  cohort: string; // Cohort month in YYYY-MM format
+  totalCustomers: number;
+  repeatCustomers: number;
+  avgOrdersPerCustomer: string; // Average as string with 2 decimals
+  retentionRate: string; // Percentage as string with 2 decimals
+}
+
+export interface ProductAffinity {
+  pair: string; // Product pair in format "Category1 + Category2" (sorted alphabetically)
+  count: number; // Number of customers who bought both products together
+}
+
+export interface DiscountImpact {
+  withDiscount: {
+    orders: number;
+    revenue: number;
+    profit: number;
+    avgDiscount: string; // Average discount as string with 2 decimals
+  };
+  withoutDiscount: {
+    orders: number;
+    revenue: number;
+    profit: number;
+  };
 }

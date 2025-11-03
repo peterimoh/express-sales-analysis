@@ -8,6 +8,8 @@ import channelRoutes from "./channel.routes.js";
 import marketingRoutes from "./marketing.route.js";
 import geographicRoutes from "./geographic.routes.js";
 import satisfactionRoutes from "./satisfaction.routes.js";
+import paymentRoutes from "./payment.routes.js";
+import segmentRoutes from "./segment.routes.js";
 
 const router = Router();
 
@@ -20,5 +22,6 @@ router.use("/channels", channelRoutes);
 router.use("/marketing", marketingRoutes);
 router.use("/geographic", geographicRoutes);
 router.use("/satisfaction", satisfactionRoutes);
-
+router.use("/payment", paymentRoutes);
+router.use("/segments", segmentRoutes);
 export default router;

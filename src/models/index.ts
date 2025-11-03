@@ -15,6 +15,14 @@ export type {
   Satisfaction,
   NPSDistribution,
   CSATDistribution,
+  PaymentMethod,
+  AgeRangeRevenue,
+  GenderRevenue,
+  SegmentPerformance,
+  SKURevenue,
+  CohortRetention,
+  ProductAffinity,
+  DiscountImpact,
   PaginatedResponse,
   GlobalFiltersParams,
   OptionalGlobalFilters,
@@ -46,6 +54,15 @@ export { GeographicModel, geographicModel } from "./geographic.models.js";
 
 // Satisfaction model
 export { SatisfactionModel, satisfactionModel } from "./satisfaction.model.js";
+
+// Payment model
+export { PaymentModel, paymentModel } from "./payment.model.js";
+
+// Segment model
+export { SegmentModel, segmentModel } from "./segment.model.js";
+
+// User model
+export { UserModel, userModel } from "./user.model.js";
 
 // Base model
 export { BaseModel } from "./base.model.js";

@@ -5,6 +5,9 @@ import {
   CustomerRevenue,
   RegionRevenue,
   CountryRevenue,
+  AgeRangeRevenue,
+  GenderRevenue,
+  SKURevenue,
 } from "#types/index.js";
 import { BaseModel } from "./base.model.js";
 
@@ -349,6 +352,344 @@ export class RevenueModel extends BaseModel<Revenue> {
         orders: row.orders,
         profit: row.profit,
         revenueShare: revenueShareValue.toFixed(2),
+      };
+    });
+  }
+
+  async getRevenueByAgeRange(
+    params: GlobalFiltersParams
+  ): Promise<AgeRangeRevenue[]> {
+    const {
+      startDate,
+      endDate,
+      country,
+      productCategory,
+      marketingChannel,
+      customerSegment,
+    } = params;
+
+    // Build optional WHERE conditions (exclude age_range since we're grouping by it)
+    const filters: string[] = [];
+    const filterConditions: string[] = [];
+
+    if (country) {
+      filters.push(`country = $${filterConditions.length + 3}`);
+      filterConditions.push(country);
+    }
+    if (productCategory) {
+      filters.push(`product_category = $${filterConditions.length + 3}`);
+      filterConditions.push(productCategory);
+    }
+    if (marketingChannel) {
+      filters.push(`marketing_channel = $${filterConditions.length + 3}`);
+      filterConditions.push(marketingChannel);
+    }
+    if (customerSegment) {
+      filters.push(`customer_segment = $${filterConditions.length + 3}`);
+      filterConditions.push(customerSegment);
+    }
+
+    const whereClause =
+      filters.length > 0 ? `AND ${filters.join(" AND ")}` : "";
+
+    const query = `
+      SELECT
+        age_range AS age_range,
+        COUNT(*)::numeric AS orders,
+        SUM(total_amount)::numeric AS revenue,
+        SUM(total_profit)::numeric AS profit,
+        AVG(NULLIF(customer_satisfaction_score, NULL)) AS avg_satisfaction,
+        CASE
+          WHEN SUM(total_amount) > 0 THEN 
+            ROUND((SUM(total_profit) / NULLIF(SUM(total_amount), 0)) * 100, 2)
+          ELSE 0
+        END AS margin
+      FROM ${this.tableName}
+      WHERE transaction_date >= $1::DATE
+        AND transaction_date < $2::DATE
+        AND age_range IS NOT NULL
+        ${whereClause}
+      GROUP BY age_range
+      ORDER BY revenue DESC
+    `;
+
+    interface QueryResult {
+      age_range: string;
+      orders: number;
+      revenue: number;
+      profit: number;
+      avg_satisfaction: number | null;
+      margin: number;
+    }
+
+    const queryParams = [startDate, endDate, ...filterConditions];
+    const result = await this.query<QueryResult>(query, queryParams);
+
+    return result.rows.map((row) => {
+      // Ensure numeric values are properly converted
+      const ordersValue =
+        typeof row.orders === "number"
+          ? row.orders
+          : parseInt(String(row.orders || 0), 10);
+
+      const revenueValue =
+        typeof row.revenue === "number"
+          ? row.revenue
+          : parseFloat(String(row.revenue || 0));
+
+      const profitValue =
+        typeof row.profit === "number"
+          ? row.profit
+          : parseFloat(String(row.profit || 0));
+
+      const marginValue =
+        typeof row.margin === "number"
+          ? row.margin
+          : parseFloat(String(row.margin || 0));
+
+      const avgSatisfactionValue =
+        row.avg_satisfaction !== null && row.avg_satisfaction !== undefined
+          ? typeof row.avg_satisfaction === "number"
+            ? row.avg_satisfaction
+            : parseFloat(String(row.avg_satisfaction)) || 0
+          : 0;
+
+      return {
+        ageRange: row.age_range,
+        orders: ordersValue,
+        revenue: revenueValue,
+        profit: profitValue,
+        avgSatisfaction: avgSatisfactionValue.toFixed(2),
+        margin: marginValue.toFixed(2),
+      };
+    });
+  }
+
+  async getRevenueByGender(
+    params: GlobalFiltersParams
+  ): Promise<GenderRevenue[]> {
+    const {
+      startDate,
+      endDate,
+      country,
+      productCategory,
+      marketingChannel,
+      customerSegment,
+    } = params;
+
+    // Build optional WHERE conditions (exclude gender since we're grouping by it)
+    const filters: string[] = [];
+    const filterConditions: string[] = [];
+
+    if (country) {
+      filters.push(`country = $${filterConditions.length + 3}`);
+      filterConditions.push(country);
+    }
+    if (productCategory) {
+      filters.push(`product_category = $${filterConditions.length + 3}`);
+      filterConditions.push(productCategory);
+    }
+    if (marketingChannel) {
+      filters.push(`marketing_channel = $${filterConditions.length + 3}`);
+      filterConditions.push(marketingChannel);
+    }
+    if (customerSegment) {
+      filters.push(`customer_segment = $${filterConditions.length + 3}`);
+      filterConditions.push(customerSegment);
+    }
+
+    const whereClause =
+      filters.length > 0 ? `AND ${filters.join(" AND ")}` : "";
+
+    const query = `
+      SELECT
+        gender,
+        COUNT(*)::numeric AS orders,
+        SUM(total_amount)::numeric AS revenue,
+        SUM(total_profit)::numeric AS profit,
+        AVG(NULLIF(customer_satisfaction_score, NULL)) AS avg_satisfaction,
+        CASE
+          WHEN SUM(total_amount) > 0 THEN 
+            ROUND((SUM(total_profit) / NULLIF(SUM(total_amount), 0)) * 100, 2)
+          ELSE 0
+        END AS margin
+      FROM ${this.tableName}
+      WHERE transaction_date >= $1::DATE
+        AND transaction_date < $2::DATE
+        AND gender IS NOT NULL
+        ${whereClause}
+      GROUP BY gender
+      ORDER BY revenue DESC
+    `;
+
+    interface QueryResult {
+      gender: string;
+      orders: number;
+      revenue: number;
+      profit: number;
+      avg_satisfaction: number | null;
+      margin: number;
+    }
+
+    const queryParams = [startDate, endDate, ...filterConditions];
+    const result = await this.query<QueryResult>(query, queryParams);
+
+    return result.rows.map((row) => {
+      // Ensure numeric values are properly converted
+      const ordersValue =
+        typeof row.orders === "number"
+          ? row.orders
+          : parseInt(String(row.orders || 0), 10);
+
+      const revenueValue =
+        typeof row.revenue === "number"
+          ? row.revenue
+          : parseFloat(String(row.revenue || 0));
+
+      const profitValue =
+        typeof row.profit === "number"
+          ? row.profit
+          : parseFloat(String(row.profit || 0));
+
+      const marginValue =
+        typeof row.margin === "number"
+          ? row.margin
+          : parseFloat(String(row.margin || 0));
+
+      const avgSatisfactionValue =
+        row.avg_satisfaction !== null && row.avg_satisfaction !== undefined
+          ? typeof row.avg_satisfaction === "number"
+            ? row.avg_satisfaction
+            : parseFloat(String(row.avg_satisfaction)) || 0
+          : 0;
+
+      return {
+        gender: row.gender,
+        orders: ordersValue,
+        revenue: revenueValue,
+        profit: profitValue,
+        avgSatisfaction: avgSatisfactionValue.toFixed(2),
+        margin: marginValue.toFixed(2),
+      };
+    });
+  }
+
+  async getTopSKUsByRevenue(
+    params: GlobalFiltersParams
+  ): Promise<SKURevenue[]> {
+    const {
+      startDate,
+      endDate,
+      country,
+      productCategory,
+      marketingChannel,
+      customerSegment,
+    } = params;
+
+    // Build optional WHERE conditions
+    const filters: string[] = [];
+    const filterConditions: string[] = [];
+
+    if (country) {
+      filters.push(`country = $${filterConditions.length + 3}`);
+      filterConditions.push(country);
+    }
+    if (productCategory) {
+      filters.push(`product_category = $${filterConditions.length + 3}`);
+      filterConditions.push(productCategory);
+    }
+    if (marketingChannel) {
+      filters.push(`marketing_channel = $${filterConditions.length + 3}`);
+      filterConditions.push(marketingChannel);
+    }
+    if (customerSegment) {
+      filters.push(`customer_segment = $${filterConditions.length + 3}`);
+      filterConditions.push(customerSegment);
+    }
+
+    const whereClause =
+      filters.length > 0 ? `AND ${filters.join(" AND ")}` : "";
+
+    // Assuming the field is product_sku - adjust if your database uses a different field name
+    const query = `
+      SELECT
+        sku AS sku,
+        COUNT(*)::numeric AS orders,
+        SUM(total_amount)::numeric AS revenue,
+        SUM(total_profit)::numeric AS profit,
+        SUM(quantity)::numeric AS units,
+        CASE 
+          WHEN COUNT(*) > 0 THEN ROUND(SUM(total_amount) / NULLIF(SUM(quantity), 0), 2)
+          ELSE 0
+        END AS avg_price,
+        CASE
+          WHEN SUM(total_amount) > 0 THEN 
+            ROUND((SUM(total_profit) / NULLIF(SUM(total_amount), 0)) * 100, 2)
+          ELSE 0
+        END AS margin
+      FROM ${this.tableName}
+      WHERE transaction_date >= $1::DATE
+        AND transaction_date < $2::DATE
+        AND sku IS NOT NULL
+        ${whereClause}
+      GROUP BY sku
+      ORDER BY revenue DESC
+      LIMIT 15
+    `;
+
+    interface QueryResult {
+      sku: string;
+      orders: number;
+      revenue: number;
+      profit: number;
+      units: number;
+      avg_price: number;
+      margin: number;
+    }
+
+    const queryParams = [startDate, endDate, ...filterConditions];
+    const result = await this.query<QueryResult>(query, queryParams);
+
+    return result.rows.map((row) => {
+      // Ensure numeric values are properly converted
+      const ordersValue =
+        typeof row.orders === "number"
+          ? row.orders
+          : parseInt(String(row.orders || 0), 10);
+
+      const revenueValue =
+        typeof row.revenue === "number"
+          ? row.revenue
+          : parseFloat(String(row.revenue || 0));
+
+      const profitValue =
+        typeof row.profit === "number"
+          ? row.profit
+          : parseFloat(String(row.profit || 0));
+
+      const unitsValue =
+        typeof row.units === "number"
+          ? row.units
+          : parseInt(String(row.units || 0), 10);
+
+      const avgPriceValue =
+        typeof row.avg_price === "number"
+          ? row.avg_price
+          : parseFloat(String(row.avg_price || 0));
+
+      const marginValue =
+        typeof row.margin === "number"
+          ? row.margin
+          : parseFloat(String(row.margin || 0));
+
+      return {
+        sku: row.sku,
+        orders: ordersValue,
+        revenue: revenueValue,
+        profit: profitValue,
+        units: unitsValue,
+        avgPrice: avgPriceValue,
+        margin: marginValue.toFixed(2),
       };
     });
   }
