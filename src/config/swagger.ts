@@ -3,6 +3,12 @@ import type { SwaggerDefinition } from "swagger-jsdoc";
 import dotenv from "dotenv";
 dotenv.config();
 
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const swaggerDefinition: SwaggerDefinition = {
   openapi: "3.0.0",
   info: {
@@ -695,6 +701,12 @@ const swaggerDefinition: SwaggerDefinition = {
       bearerAuth: [],
     },
   ],
+  apis: [
+    `${__dirname}/../../src/routes/**/*.ts`,
+    `${__dirname}/../../src/controllers/**/*.ts`,
+    `${__dirname}/../../dist/src/routes/**/*.js`,
+    `${__dirname}/../../dist/src/controllers/**/*.js`,
+  ],
 };
 
 const options = {
@@ -704,14 +716,6 @@ const options = {
     "./src/controllers/**/*.ts",
     "./dist/src/routes/**/*.js",
     "./dist/src/controllers/**/*.js",
-    "../routes/**/*.ts",
-    "../controllers/**/*.ts",
-    "../../dist/src/routes/**/*.js",
-    "../../dist/src/controllers/**/*.js",
-    "../../../routes/**/*.ts",
-    "../../../controllers/**/*.ts",
-    "../../../../dist/src/routes/**/*.js",
-    "../../../../dist/src/controllers/**/*.js",
   ],
 };
 
