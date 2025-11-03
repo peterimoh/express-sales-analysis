@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const swaggerDefinition: SwaggerDefinition = {
-  openapi: "3.0.0",
+  openapi: "3.0.3",
   info: {
     title: "Sales HQ API",
     version: "1.0.0",
@@ -18,6 +18,7 @@ const swaggerDefinition: SwaggerDefinition = {
       name: "Proprietary",
     },
   },
+  schemes: ["http", "https"],
   servers: [
     {
       url:
@@ -35,6 +36,8 @@ const swaggerDefinition: SwaggerDefinition = {
         type: "http",
         scheme: "bearer",
         bearerFormat: "JWT",
+        in: "header",
+        name: "Authorization",
         description:
           "JWT Authorization header using the Bearer scheme. Example: 'Authorization: Bearer {token}'",
       },
